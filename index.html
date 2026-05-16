@@ -6,7 +6,7 @@
 <title>무한 노트</title>
 <style>
 /* =========================================
-   CSS (완전 고정형 레이아웃으로 변경)
+   CSS 
    ========================================= */
 body, html {
     margin: 0; padding: 0; width: 100%; height: 100%; 
@@ -15,7 +15,6 @@ body, html {
     user-select: none; -webkit-tap-highlight-color: transparent; 
 }
 
-/* absolute에서 fixed로 변경하여 화면 스크롤, 배율 오류 원천 차단 */
 #canvas-container { 
     position: fixed; top: 0; left: 0;
     width: 100vw; height: 100vh; 
@@ -88,7 +87,6 @@ body, html {
 .conn-left { top: calc(50% - 0.5em); left: -0.5em; }
 .conn-right { top: calc(50% - 0.5em); right: -0.5em; }
 
-/* absolute -> fixed로 변경 (화면 상단 중앙 무조건 고정) */
 #multi-ui-panel { 
     display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); 
     background: white; padding: 10px 20px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
@@ -98,7 +96,6 @@ body, html {
 #multi-ui-panel button { padding: 8px 12px; border: none; border-radius: 8px; background: #f3e5f5; color: #BA68C8; font-weight: bold; cursor: pointer; }
 #multi-ui-panel button:active { background: #e1bee7; }
 
-/* absolute -> fixed로 변경 (우측 하단 무조건 고정, z-index 극대화) */
 #ui-layer {
     position: fixed; bottom: 20px; right: 20px; 
     display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 9999;
@@ -154,6 +151,7 @@ body, html {
             <button id="search-next-btn" class="search-nav-btn" title="다음">▶</button>
         </div>
     </div>
+    <button id="fullscreen-btn" title="전체 화면">⛶</button>
     <button id="undo-btn" title="실행 취소">↶</button>
     <button id="redo-btn" title="다시 실행">↷</button>
     <button id="fit-btn" title="한눈에 보기">⌂</button>
@@ -178,6 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const multiCount = document.getElementById('multi-count');
     const alignHBtn = document.getElementById('align-h-btn');
     const alignVBtn = document.getElementById('align-v-btn');
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
 
     const searchContainer = document.getElementById('search-container');
     const searchToggleBtn = document.getElementById('search-toggle-btn');
@@ -268,6 +267,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /* [신규] 전체 화면 스크립트 기능 구현 */
+    if (fullscreenBtn) {
+        fullscreenBtn.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    alert(`전체 화면 실패: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        });
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+        if (document.fullscreenElement) {
+            fullscreenBtn.textContent = '🗗'; fullscreenBtn.title = "전체 화면 종료";
+        } else {
+            fullscreenBtn.textContent = '⛶'; fullscreenBtn.title = "전체 화면";
+        }
+    });
+
     searchToggleBtn.addEventListener('click', () => {
         if (searchContainer.classList.contains('expanded')) {
             searchContainer.classList.remove('expanded'); searchContainer.classList.add('collapsed'); searchInput.value = ''; clearSearch();
@@ -310,7 +330,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (fitBtn) {
         fitBtn.addEventListener('click', () => {
             const postIts = document.querySelectorAll('.post-it');
-            if (postIts.length === 0) { scale = 1; translateX = 0; translateY = 0; updateTransform(); return; }
+            /* [신규] 포스트잇이 없는 상태에서 누르면 캔버스 정중앙(2500,2500) 정렬 */
+            if (postIts.length === 0) { 
+                scale = 1; 
+                translateX = (window.innerWidth / 2) - 2500; 
+                translateY = (window.innerHeight / 2) - 2500; 
+                updateTransform(); return; 
+            }
             let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
             postIts.forEach(el => {
                 const l = parseFloat(el.style.left); const t = parseFloat(el.style.top);
@@ -327,9 +353,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function applyDataToCanvas(data) {
-        // [버그 수정 2] 과거 저장된 배율이 비정상적으로 작거나 크면 1배율로 리셋
         scale = data.scale || 1; 
-        if(scale < 0.1 || scale > 10) scale = 1; 
+        if(scale < 0.05 || scale > 10) scale = 1; 
         translateX = data.translateX || 0; translateY = data.translateY || 0;
         updateTransform();
         restoreState(JSON.stringify({ postIts: data.postIts, edges: data.edges }));
@@ -672,7 +697,15 @@ document.addEventListener('DOMContentLoaded', () => {
         justCreated = true; newPostIt.querySelector('.post-it-title').focus(); pushHistory(); 
     }
 
-    if (!loadDataFromLocal()) { updateTransform(); pushHistory(); } else { updateUndoRedoUI(); }
+    if (!loadDataFromLocal()) { 
+        /* [신규] 최초 로드 시 캔버스 정중앙(2500, 2500)이 화면 센터에 오도록 초기 좌표 설정 */
+        scale = 1;
+        translateX = (window.innerWidth / 2) - 2500;
+        translateY = (window.innerHeight / 2) - 2500;
+        updateTransform(); pushHistory(); 
+    } else { 
+        updateUndoRedoUI(); 
+    }
     setInterval(saveDataToLocal, 3000); 
 });
 </script>
