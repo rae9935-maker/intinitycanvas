@@ -267,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* [신규] 전체 화면 스크립트 기능 구현 */
+    /* [신규] 전체 화면 아이콘 고정(깨짐 방지) 및 툴팁만 변경 */
     if (fullscreenBtn) {
         fullscreenBtn.addEventListener('click', () => {
             if (!document.fullscreenElement) {
@@ -282,9 +282,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('fullscreenchange', () => {
         if (document.fullscreenElement) {
-            fullscreenBtn.textContent = '⛶'; fullscreenBtn.title = "전체 화면 종료";
+            fullscreenBtn.title = "전체 화면 종료";
         } else {
-            fullscreenBtn.textContent = '⛶'; fullscreenBtn.title = "전체 화면";
+            fullscreenBtn.title = "전체 화면";
         }
     });
 
@@ -330,7 +330,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (fitBtn) {
         fitBtn.addEventListener('click', () => {
             const postIts = document.querySelectorAll('.post-it');
-            /* [신규] 포스트잇이 없는 상태에서 누르면 캔버스 정중앙(2500,2500) 정렬 */
             if (postIts.length === 0) { 
                 scale = 1; 
                 translateX = (window.innerWidth / 2) - 2500; 
@@ -698,14 +697,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (!loadDataFromLocal()) { 
-        /* [신규] 최초 로드 시 캔버스 정중앙(2500, 2500)이 화면 센터에 오도록 초기 좌표 설정 */
-        scale = 1;
-        translateX = (window.innerWidth / 2) - 2500;
-        translateY = (window.innerHeight / 2) - 2500;
+        scale = 1; translateX = (window.innerWidth / 2) - 2500; translateY = (window.innerHeight / 2) - 2500;
         updateTransform(); pushHistory(); 
-    } else { 
-        updateUndoRedoUI(); 
-    }
+    } else { updateUndoRedoUI(); }
     setInterval(saveDataToLocal, 3000); 
 });
 </script>
