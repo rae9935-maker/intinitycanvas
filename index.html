@@ -6,19 +6,19 @@
 <title>무한 노트</title>
 <style>
 /* =========================================
-CSS
-========================================= */
+   CSS 
+   ========================================= */
 body, html {
-margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
+margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; 
 background-color: #f0f0f0; -webkit-touch-callout: none; -webkit-user-select: none;
-user-select: none; -webkit-tap-highlight-color: transparent;
+user-select: none; -webkit-tap-highlight-color: transparent; 
 }
 
 #canvas-container { width: 100vw; height: 100vh; cursor: grab; touch-action: none; }
 #canvas {
-position: absolute; width: 5000px; height: 5000px;
+position: absolute; width: 5000px; height: 5000px; 
 background-image: radial-gradient(#d1d1d1 1px, transparent 1px);
-background-size: 40px 40px; transform-origin: 0 0;
+background-size: 40px 40px; transform-origin: 0 0; 
 }
 
 #arrow-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 1; }
@@ -28,7 +28,7 @@ background-size: 40px 40px; transform-origin: 0 0;
 .post-it {
 position: absolute; background-color: #fff9c4;
 box-shadow: 0.15em 0.15em 0.5em rgba(0,0,0,0.1);
-padding: 1em; border-radius: 0.3em; box-sizing: border-box;
+padding: 1em; border-radius: 0.3em; box-sizing: border-box; 
 display: flex; flex-direction: column; line-height: 1.3; z-index: 2;
 transition: outline 0.1s, box-shadow 0.1s;
 }
@@ -65,7 +65,7 @@ z-index: 5;
 .post-it.selected .handle { display: flex; }
 .post-it.multi-selected .move-handle { display: flex; border-color: #BA68C8; }
 .post-it.multi-selected .move-handle::after { color: #BA68C8; }
-.post-it.multi-selected.confirm-delete .move-handle { display: none; }
+.post-it.multi-selected.confirm-delete .move-handle { display: none; } 
 
 .move-handle { top: -1.1em; left: -1.1em; cursor: grab; }
 .move-handle:active { cursor: grabbing; }
@@ -185,19 +185,19 @@ padding: 4px 8px; cursor: pointer; display: flex; align-items: center; justify-c
 
 <script>
 /* =========================================
-JavaScript
-========================================= */
+   JavaScript
+   ========================================= */
 document.addEventListener('DOMContentLoaded', () => {
 const container = document.getElementById('canvas-container');
 const canvas = document.getElementById('canvas');
 const arrowLayer = document.getElementById('arrow-layer');
 const modeBtn = document.getElementById('view-mode-btn');
-const exportBtn = document.getElementById('export-btn');
-const importBtn = document.getElementById('import-btn');
-const fileInput = document.getElementById('file-input');
-const undoBtn = document.getElementById('undo-btn');
-const redoBtn = document.getElementById('redo-btn');
-const fitBtn = document.getElementById('fit-btn');
+const exportBtn = document.getElementById('export-btn'); 
+const importBtn = document.getElementById('import-btn'); 
+const fileInput = document.getElementById('file-input'); 
+const undoBtn = document.getElementById('undo-btn'); 
+const redoBtn = document.getElementById('redo-btn'); 
+const fitBtn = document.getElementById('fit-btn'); 
 const multiUiPanel = document.getElementById('multi-ui-panel');
 const multiCount = document.getElementById('multi-count');
 const alignHBtn = document.getElementById('align-h-btn');
@@ -218,17 +218,17 @@ let scale = 1; let translateX = 0; let translateY = 0;
 let isPanning = false; let startX = 0; let startY = 0;
 let isDraggingPostIt = false; let isResizing = false; let isDrawingArrow = false;
 let currentPostIt = null; let postItStartX = 0; let postItStartY = 0;
-let initialWidth = 0; let initialHeight = 0;
-let isEditMode = true; let selectedPostIt = null;
-let clickStartX = 0; let clickStartY = 0; let justCreated = false;
+let initialWidth = 0; let initialHeight = 0; 
+let isEditMode = true; let selectedPostIt = null; 
+let clickStartX = 0; let clickStartY = 0; let justCreated = false; 
 
-let isMultiSelectMode = false; let multiSelectedNodes = [];
+let isMultiSelectMode = false; let multiSelectedNodes = []; 
 let longPressTimer = null; let wasLongPressed = false;
 
-let draggingNodes = new Map();
+let draggingNodes = new Map(); 
 let edges = []; let tempEdge = null; let tempPathElement = null;
 
-let historyStack = []; let redoStack = []; const MAX_HISTORY = 30;
+let historyStack = []; let redoStack = []; const MAX_HISTORY = 30; 
 let searchMatches = []; let currentSearchIndex = -1; // 검색 관련 상태
 
 function generateId() { return '_' + Math.random().toString(36).substr(2, 9); }
@@ -261,7 +261,7 @@ function pushHistory() {
 const data = getCanvasData();
 historyStack.push(JSON.stringify({ postIts: data.postIts, edges: data.edges }));
 if (historyStack.length > MAX_HISTORY) historyStack.shift();
-redoStack = [];
+redoStack = []; 
 updateUndoRedoUI();
 }
 
@@ -281,7 +281,7 @@ updateUndoRedoUI();
 
 if (undoBtn) {
 undoBtn.addEventListener('click', () => {
-if (historyStack.length <= 1) return;
+if (historyStack.length <= 1) return; 
 redoStack.push(historyStack.pop());
 restoreState(historyStack[historyStack.length - 1]);
 });
@@ -366,7 +366,7 @@ focusOnMatch(searchMatches[currentSearchIndex]);
 });
 
 function updateSearchUI() {
-searchCounter.textContent = ${currentSearchIndex + 1}/${searchMatches.length};
+searchCounter.textContent = `${currentSearchIndex + 1}/${searchMatches.length}`;
 }
 
 // 검색된 요소를 화면 정중앙에 배치 (Zoom to fit 특정 요소)
@@ -401,7 +401,7 @@ if (l + w > maxX) maxX = l + w; if (t + h > maxY) maxY = t + h;
 const padding = 150; const contentW = maxX - minX; const contentH = maxY - minY;
 const screenW = window.innerWidth; const screenH = window.innerHeight;
 const scaleX = screenW / (contentW + padding * 2); const scaleY = screenH / (contentH + padding * 2);
-scale = Math.min(scaleX, scaleY, 2);
+scale = Math.min(scaleX, scaleY, 2); 
 const contentCX = minX + contentW / 2; const contentCY = minY + contentH / 2;
 translateX = screenW / 2 - contentCX * scale; translateY = screenH / 2 - contentCY * scale;
 updateTransform();
@@ -412,7 +412,7 @@ function applyDataToCanvas(data) {
 scale = data.scale || 1; translateX = data.translateX || 0; translateY = data.translateY || 0;
 updateTransform();
 restoreState(JSON.stringify({ postIts: data.postIts, edges: data.edges }));
-historyStack = []; redoStack = [];
+historyStack = []; redoStack = []; 
 pushHistory();
 }
 
@@ -420,7 +420,7 @@ function exportDataToFile() {
 const data = getCanvasData(); const dataStr = JSON.stringify(data);
 const blob = new Blob([dataStr], { type: "application/json" }); const url = URL.createObjectURL(blob);
 const a = document.createElement('a'); a.href = url; const d = new Date();
-a.download = canvas_${d.getFullYear()}${(d.getMonth()+1).toString().padStart(2,'0')}${d.getDate().toString().padStart(2,'0')}_${d.getHours().toString().padStart(2,'0')}${d.getMinutes().toString().padStart(2,'0')}.json`;
+a.download = `canvas_${d.getFullYear()}${(d.getMonth()+1).toString().padStart(2,'0')}${d.getDate().toString().padStart(2,'0')}_${d.getHours().toString().padStart(2,'0')}${d.getMinutes().toString().padStart(2,'0')}.json`;
 document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
 }
 
@@ -430,7 +430,7 @@ const reader = new FileReader();
 reader.onload = function(e) {
 try { const data = JSON.parse(e.target.result); applyDataToCanvas(data); saveDataToLocal(); } catch(err) { alert("잘못된 파일 형식입니다."); }
 };
-reader.readAsText(file); event.target.value = '';
+reader.readAsText(file); event.target.value = ''; 
 }
 
 function saveDataToLocal() { const data = getCanvasData(); localStorage.setItem('infiniteCanvasData', JSON.stringify(data)); }
@@ -441,7 +441,7 @@ try { const data = JSON.parse(saved); applyDataToCanvas(data); return true; } ca
 
 function buildPostItDOM(id, left, top, width, height, colorClass, titleHTML, contentHTML, fSize) {
 const newPostIt = document.createElement('div');
-newPostIt.className = post-it${colorClass}`; newPostIt.id = id;
+newPostIt.className = `post-it ${colorClass}`; newPostIt.id = id;
 newPostIt.style.left = left; newPostIt.style.top = top;
 newPostIt.style.width = width; newPostIt.style.height = height;
 
@@ -454,10 +454,10 @@ const connLeft = document.createElement('div'); connLeft.className = 'conn-point
 const connRight = document.createElement('div'); connRight.className = 'conn-point conn-right'; connRight.dataset.port = 'right';
 
 const menu = document.createElement('div'); menu.className = 'post-it-menu';
-menu.innerHTML = <button class="color-btn" data-color="yellow"&gt;🟡&lt;/button&gt;&lt;button class="color-btn" data-color="pink"&gt;🔴&lt;/button&gt;&lt;button class="color-btn" data-color="green"&gt;🟢&lt;/button&gt;&lt;button class="color-btn" data-color="blue"&gt;🔵&lt;/button>;
-const title = document.createElement('div'); title.className = 'post-it-title';
+menu.innerHTML = `<button class="color-btn" data-color="yellow">🟡</button><button class="color-btn" data-color="pink">🔴</button><button class="color-btn" data-color="green">🟢</button><button class="color-btn" data-color="blue">🔵</button>`;
+const title = document.createElement('div'); title.className = 'post-it-title'; 
 title.contentEditable = "false"; title.innerHTML = titleHTML;
-const content = document.createElement('div'); content.className = 'post-it-content';
+const content = document.createElement('div'); content.className = 'post-it-content'; 
 content.contentEditable = "false"; content.innerHTML = contentHTML;
 
 let initialText = '';
@@ -515,12 +515,12 @@ if (isAdding) { if (!multiSelectedNodes.includes(el)) { el.classList.add('multi-
 else { el.classList.remove('multi-selected'); el.classList.remove('confirm-delete'); multiSelectedNodes = multiSelectedNodes.filter(n => n !== el); }
 });
 if (multiSelectedNodes.length === 0) { clearMultiSelection(); } else {
-multiCount.textContent = ${multiSelectedNodes.length}개 선택됨`; multiUiPanel.classList.add('active');
+multiCount.textContent = `${multiSelectedNodes.length}개 선택됨`; multiUiPanel.classList.add('active');
 multiSelectedNodes.forEach(el => el.classList.remove('confirm-delete'));
 }
 }
 
-function updatePostItFontSize(postIt) { const width = parseFloat(postIt.style.width) || 160; postIt.style.fontSize = ``${width * 0.055}px`; }
+function updatePostItFontSize(postIt) { const width = parseFloat(postIt.style.width) || 160; postIt.style.fontSize = `${width * 0.055}px`; }
 
 function collectNodesForDrag(nodeId, visited) {
 if (visited.has(nodeId)) return; visited.add(nodeId); const el = document.getElementById(nodeId);
@@ -548,7 +548,7 @@ pathEl.id = edge.id; pathEl.setAttribute('class', 'arrow-path'); pathEl.setAttri
 pathEl.addEventListener('pointerdown', (e) => {
 if (!isEditMode) return; e.stopPropagation();
 if (pathEl.classList.contains('confirm')) {
-edges = edges.filter(ed => ed.id !== edge.id); pathEl.remove(); pushHistory();
+edges = edges.filter(ed => ed.id !== edge.id); pathEl.remove(); pushHistory(); 
 } else {
 document.querySelectorAll('.arrow-path.confirm, .delete-handle.confirm').forEach(el => el.classList.remove('confirm'));
 multiSelectedNodes.forEach(el => el.classList.remove('confirm-delete'));
@@ -563,19 +563,19 @@ const dx = Math.abs(p2.x - p1.x) * 0.5; const dy = Math.abs(p2.y - p1.y) * 0.5; 
 let c1x = p1.x, c1y = p1.y, c2x = p2.x, c2y = p2.y;
 if (edge.fromPort === 'top') c1y -= curve; else if (edge.fromPort === 'bottom') c1y += curve; else if (edge.fromPort === 'left') c1x -= curve; else if (edge.fromPort === 'right') c1x += curve;
 if (edge.toPort === 'top') c2y -= curve; else if (edge.toPort === 'bottom') c2y += curve; else if (edge.toPort === 'left') c2x -= curve; else if (edge.toPort === 'right') c2x += curve;
-pathEl.setAttribute('d', M ${p1.x} ${p1.y} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p2.x} ${p2.y});
+pathEl.setAttribute('d', `M ${p1.x} ${p1.y} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p2.x} ${p2.y}`);
 });
 
 if (isDrawingArrow && tempEdge && tempPathElement) {
 const p1 = getPortCoordinates(tempEdge.from, tempEdge.fromPort); const p2 = { x: tempEdge.mouseX, y: tempEdge.mouseY };
-tempPathElement.setAttribute('d', M ${p1.x} ${p1.y} Q ${(p1.x+p2.x)/2} ${p1.y}, ${p2.x} ${p2.y});
+tempPathElement.setAttribute('d', `M ${p1.x} ${p1.y} Q ${(p1.x+p2.x)/2} ${p1.y}, ${p2.x} ${p2.y}`);
 }
 }
 
 let lastTapTime = 0;
 
 container.addEventListener('pointerdown', (e) => {
-if (e.pointerType === 'mouse' && e.button !== 0) return; if (!e.isPrimary) return;
+if (e.pointerType === 'mouse' && e.button !== 0) return; if (!e.isPrimary) return; 
 clickStartX = e.clientX; clickStartY = e.clientY; wasLongPressed = false;
 
 // UI 레이어나 검색 패널 클릭 시 캔버스 로직 무시
@@ -601,17 +601,17 @@ e.stopPropagation(); return;
 
 if (deleteHandle && targetPostIt === selectedPostIt) {
 if (deleteHandle.classList.contains('confirm')) {
-edges = edges.filter(ed => ed.from !== targetPostIt.id && ed.to !== targetPostIt.id);
+edges = edges.filter(ed => ed.from !== targetPostIt.id && ed.to !== targetPostIt.id); 
 document.querySelectorAll('.arrow-path').forEach(p => { if(!edges.find(e => e.id === p.id)) p.remove(); });
 targetPostIt.remove(); selectedPostIt = null; isDraggingPostIt = false; isResizing = false;
-pushHistory();
+pushHistory(); 
 } else { deleteHandle.classList.add('confirm'); }
 e.stopPropagation(); return;
 }
 
 if (colorBtn && targetPostIt && !isMultiSelectMode) {
-const color = colorBtn.dataset.color; targetPostIt.classList.remove('bg-yellow', 'bg-pink', 'bg-green', 'bg-blue'); targetPostIt.classList.add(bg-${color}`);
-pushHistory();
+const color = colorBtn.dataset.color; targetPostIt.classList.remove('bg-yellow', 'bg-pink', 'bg-green', 'bg-blue'); targetPostIt.classList.add(`bg-${color}`);
+pushHistory(); 
 e.stopPropagation(); return;
 }
 
@@ -627,7 +627,7 @@ if (isMultiSelectMode && multiSelectedNodes.includes(targetPostIt)) {
 multiSelectedNodes.forEach(el => { draggingNodes.set(el.id, { element: el, initialLeft: parseFloat(el.style.left || 0), initialTop: parseFloat(el.style.top || 0) }); });
 } else { collectNodesForDrag(currentPostIt.id, new Set()); }
 e.stopPropagation(); return;
-}
+} 
 if (targetPostIt && !e.target.isContentEditable) {
 longPressTimer = setTimeout(() => {
 wasLongPressed = true; isPanning = false; isMultiSelectMode = true;
@@ -639,7 +639,7 @@ isPanning = true; startX = e.clientX - translateX; startY = e.clientY - translat
 if (!targetPostIt && !e.target.closest('.arrow-path')) {
 const currentTime = new Date().getTime(); const tapLength = currentTime - lastTapTime;
 if (tapLength < 300 && tapLength > 0) {
-createPostIt(e.clientX, e.clientY); isPanning = false; lastTapTime = 0;
+createPostIt(e.clientX, e.clientY); isPanning = false; lastTapTime = 0; 
 } else {
 isPanning = true; startX = e.clientX - translateX; startY = e.clientY - translateY; container.style.cursor = 'grabbing'; lastTapTime = currentTime;
 }
@@ -659,13 +659,13 @@ drawArrows(); return;
 
 if (isResizing && currentPostIt) {
 const dx = (e.clientX - postItStartX) / scale; const dy = (e.clientY - postItStartY) / scale;
-currentPostIt.style.width = ``${Math.max(2, initialWidth + dx)}px; currentPostIt.style.height =${Math.max(2, initialHeight + dy)}px;
+currentPostIt.style.width = `${Math.max(2, initialWidth + dx)}px`; currentPostIt.style.height = `${Math.max(2, initialHeight + dy)}px`;
 updatePostItFontSize(currentPostIt); drawArrows(); return;
 }
 
 if (isDraggingPostIt && draggingNodes.size > 0) {
 const dx = (e.clientX - postItStartX) / scale; const dy = (e.clientY - postItStartY) / scale;
-draggingNodes.forEach(data => { data.element.style.left = ``${data.initialLeft + dx}px; data.element.style.top =${data.initialTop + dy}px; });
+draggingNodes.forEach(data => { data.element.style.left = `${data.initialLeft + dx}px`; data.element.style.top = `${data.initialTop + dy}px`; });
 drawArrows(); return;
 }
 if (isPanning) { translateX = e.clientX - startX; translateY = e.clientY - startY; updateTransform(); }
@@ -677,9 +677,9 @@ let hasChanges = false;
 
 if (isDrawingArrow) {
 const hoverConn = document.elementFromPoint(e.clientX, e.clientY)?.closest('.conn-point'); const hoverTarget = hoverConn?.closest('.post-it');
-if (hoverConn && hoverTarget && hoverTarget.id !== tempEdge.from) {
-edges.push({ id: generateId(), from: tempEdge.from, fromPort: tempEdge.fromPort, to: hoverTarget.id, toPort: hoverConn.dataset.port });
-hasChanges = true;
+if (hoverConn && hoverTarget && hoverTarget.id !== tempEdge.from) { 
+edges.push({ id: generateId(), from: tempEdge.from, fromPort: tempEdge.fromPort, to: hoverTarget.id, toPort: hoverConn.dataset.port }); 
+hasChanges = true; 
 }
 if (tempPathElement) tempPathElement.remove(); tempPathElement = null; tempEdge = null; isDrawingArrow = false;
 document.querySelectorAll('.post-it.drag-target').forEach(el => el.classList.remove('drag-target')); drawArrows();
@@ -702,21 +702,21 @@ selectedPostIt.querySelector('.post-it-title').contentEditable = "true"; selecte
 }
 }
 
-if (isResizing || isDraggingPostIt) hasChanges = true;
+if (isResizing || isDraggingPostIt) hasChanges = true; 
 isPanning = false; isDraggingPostIt = false; isResizing = false; currentPostIt = null; if (container) container.style.cursor = 'grab';
-if (hasChanges) pushHistory();
+if (hasChanges) pushHistory(); 
 });
 
 if (alignHBtn) {
 alignHBtn.addEventListener('click', () => {
 if (multiSelectedNodes.length < 2) return;
 multiSelectedNodes.sort((a,b) => parseFloat(a.style.left) - parseFloat(b.style.left));
-let currentX = parseFloat(multiSelectedNodes[0].style.left); const targetY = parseFloat(multiSelectedNodes[0].style.top);
+let currentX = parseFloat(multiSelectedNodes[0].style.left); const targetY = parseFloat(multiSelectedNodes[0].style.top); 
 multiSelectedNodes.forEach((el, idx) => {
 if (idx > 0) { const prevEl = multiSelectedNodes[idx - 1]; const uniformGap = parseFloat(prevEl.style.width) * 0.1; currentX += parseFloat(prevEl.style.width) + uniformGap; }
-el.style.left = ``${currentX}px; el.style.top =${targetY}px;
+el.style.left = `${currentX}px`; el.style.top = `${targetY}px`;
 });
-drawArrows(); pushHistory();
+drawArrows(); pushHistory(); 
 });
 }
 
@@ -727,15 +727,15 @@ multiSelectedNodes.sort((a,b) => parseFloat(a.style.top) - parseFloat(b.style.to
 const targetX = parseFloat(multiSelectedNodes[0].style.left); let currentY = parseFloat(multiSelectedNodes[0].style.top);
 multiSelectedNodes.forEach((el, idx) => {
 if (idx > 0) { const prevEl = multiSelectedNodes[idx - 1]; const uniformGap = parseFloat(prevEl.style.height) * 0.1; currentY += parseFloat(prevEl.style.height) + uniformGap; }
-el.style.left = ``${targetX}px; el.style.top =${currentY}px;
+el.style.left = `${targetX}px`; el.style.top = `${currentY}px`;
 });
-drawArrows(); pushHistory();
+drawArrows(); pushHistory(); 
 });
 }
 
 document.addEventListener('keydown', (e) => {
-if (!isEditMode) return;
-if (e.target.isContentEditable || e.target.id === 'search-input') return;
+if (!isEditMode) return; 
+if (e.target.isContentEditable || e.target.id === 'search-input') return; 
 
 if (e.key === 'Delete' || e.key === 'Backspace') {
 const selectedArrow = document.querySelector('.arrow-path.confirm');
@@ -752,7 +752,7 @@ if (selectedPostIt) {
 const delHandle = selectedPostIt.querySelector('.delete-handle');
 if (delHandle) {
 if (delHandle.classList.contains('confirm')) {
-edges = edges.filter(ed => ed.from !== selectedPostIt.id && ed.to !== selectedPostIt.id);
+edges = edges.filter(ed => ed.from !== selectedPostIt.id && ed.to !== selectedPostIt.id); 
 document.querySelectorAll('.arrow-path').forEach(p => { if(!edges.find(ed => ed.id === p.id)) p.remove(); });
 selectedPostIt.remove(); selectedPostIt = null; pushHistory();
 } else { delHandle.classList.add('confirm'); }
@@ -789,14 +789,12 @@ scale = newScale; lastDistance = currentDistance === 0 ? 1 : currentDistance; la
 }
 }, { passive: false });
 
-function updateTransform() { canvas.style.transform = translate(${translateX}px, 
-
-{scale})`; }
+function updateTransform() { canvas.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
 
 function createPostIt(clientX, clientY) {
 const canvasX = (clientX - translateX) / scale; const canvasY = (clientY - translateY) / scale;
 const baseWidth = 160 / scale; const baseHeight = 220 / scale;
-const newPostIt = buildPostItDOM(generateId(), ${canvasX}px, ``${canvasY}px, ${baseWidth}px, ``${baseHeight}px, 'bg-yellow', '새로운 제목', '내용을 입력하세요...', null);
+const newPostIt = buildPostItDOM(generateId(), `${canvasX}px`, `${canvasY}px`, `${baseWidth}px`, `${baseHeight}px`, 'bg-yellow', '새로운 제목', '내용을 입력하세요...', null);
 canvas.appendChild(newPostIt);
 
 if(!isMultiSelectMode) {
@@ -804,16 +802,16 @@ clearSelection(); selectedPostIt = newPostIt; selectedPostIt.classList.add('sele
 newPostIt.querySelector('.post-it-title').contentEditable = "true"; newPostIt.querySelector('.post-it-content').contentEditable = "true";
 }
 justCreated = true; newPostIt.querySelector('.post-it-title').focus();
-pushHistory();
+pushHistory(); 
 }
 
-if (!loadDataFromLocal()) {
-updateTransform();
-pushHistory();
+if (!loadDataFromLocal()) { 
+updateTransform(); 
+pushHistory(); 
 } else {
 updateUndoRedoUI();
 }
-setInterval(saveDataToLocal, 3000);
+setInterval(saveDataToLocal, 3000); 
 });
 </script>
 </body>
